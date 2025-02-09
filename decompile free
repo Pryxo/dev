@@ -1,0 +1,26 @@
+local API = "http://127.0.0.1:10611/";
+
+-- CODE
+local Decompile = function(Script)
+    local ScriptBytecode = getscriptbytecode(Script);
+
+    if ScriptBytecode then
+        local Table = {bytecode = base64.encode(ScriptBytecode)}
+        local JSON = game.HttpService:JSONEncode(Table)
+        
+        local Output = request({
+            Url = `{API}`;
+            Method = "POST";
+            Headers = {["Content-Type"] = "application/json"};
+            Body = JSON;
+        });
+
+        if Output.StatusCode == 200 then
+            return base64.decode(Output.Body);
+        end;
+
+        return `Failed to decompile bytecode\n{Output.Body}`;
+    end;
+end;
+
+getgenv().decompile = Decompile;
